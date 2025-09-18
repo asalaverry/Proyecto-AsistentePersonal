@@ -75,4 +75,30 @@ def pedir_hora():
 def saludo_inicial():
     hablar("Hola Piju, soy tu asistente personal. ¿En qué puedo ayudarte?")
     
+
+#Funcion principal del asistente
+def pedidos(): 
+    saludo_inicial()
+    comenzar = True
     
+    #loop central
+    while comenzar:
+        
+        #activar microfono y guardar pedido
+        pedido = transformar_audio_en_texto().lower()
+        
+        # A continuacion, los distintos pedidos que puede completar el asistente
+        if 'abrir youtube' in pedido: 
+            hablar("Oka, Abriendo YouTube")
+            webbrowser.open("https://www.youtube.com")
+            continue
+        elif 'abrir internet' in pedido or 'abrir google' in pedido:
+            hablar('Dale, ya te abro internet')
+            webbrowser.open("https://www.google.com")
+            continue
+        elif 'qué día es hoy' in pedido or 'qué día es' in pedido:
+            pedir_dia()
+            continue
+        elif 'qué hora es' in pedido or 'decir la hora' in pedido:
+            pedir_hora()
+            continue
