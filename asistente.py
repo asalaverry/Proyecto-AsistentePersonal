@@ -102,3 +102,41 @@ def pedidos():
         elif 'qué hora es' in pedido or 'decir la hora' in pedido:
             pedir_hora()
             continue
+        elif 'busca en wikipedia' in pedido or 'buscar en wikipedia' in pedido:
+            hablar('Buscando eso en Wikipedia')
+            pedido = pedido.replace('buscar en wikipedia', '')
+            wikipedia.set_lang("es")
+            resultado = wikipedia.summary(pedido, sentences=1) #Buscar el resumen de la busqueda en 1 sola oracion
+            hablar("Wikipedia dice lo siguiente: ")
+            hablar(resultado)
+            continue
+        elif 'busca en internet' in pedido or 'buscar en internet' in pedido:
+            hablar('Ya mismo estoy en eso')
+            pedido = pedido.replace('buscar en internet', '')
+            pywhatkit.search(pedido)
+            hablar('Esto es lo que he encontrado')
+            continue
+        elif 'reproducir' in pedido:
+            hablar('Okay, ya mismo lo reproduzco')
+            pedido = pedido.replace('reproducir', '')
+            pywhatkit.playonyt(pedido)
+            continue
+        elif 'chiste' in pedido or 'contame un chiste' in pedido:
+            hablar(pyjokes.get_joke('es'))
+            continue
+        elif 'precio de la acciones' in pedido or 'precio de la acción' in pedido:
+            accion = pedido.split('de')[-1].strip()
+            cartera = {'apple': 'AAPL', 'amazon': 'AMZN', 'google': 'GOOGL', 'meta': 'META', 'microsoft': 'MSFT', 'netflix': 'NFLX'}
+            try: 
+                accion_buscada = cartera[accion]
+                accion_buscada = yf.Ticker(accion_buscada)
+                precio_actual = accion_buscada.info['regularMarketPrice']
+                hablar(f'El precio de {accion} es {precio_actual} dólares')
+                continue
+            except:
+                hablar('Lo siento, no pude encontrar el precio de la acción indicada')
+                continue
+        elif 'adiós' in pedido or 'chau' in pedido or 'hasta luego' in pedido:
+            hablar('Nos estamos hablando, Piju. Que andes bien')
+            comenzar = False
+            break
