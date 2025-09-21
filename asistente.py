@@ -6,6 +6,10 @@ import pyjokes
 import webbrowser
 import datetime
 import wikipedia
+from openai import OpenAI
+import os
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 #Escuchar microfono y devolver audio como texto
 def transformar_audio_en_texto():
@@ -75,11 +79,25 @@ def pedir_hora():
 def saludo_inicial():
     hablar("Hola Piju, soy tu asistente personal. ¿En qué puedo ayudarte?")
     
+def preguntar_a_chatgpt(pregunta):
+    try:
+        respuesta = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Eres un asistente de voz amable y útil. Necesito una respuesta breve y concisa."},
+                {"role": "user", "content": pregunta}
+            ]
+        )
+        return respuesta.choices[0].message.content
+    except Exception as e:
+        return f"Ocurrió un error al consultar a ChatGPT: {e}"
 
 #Funcion principal del asistente
 def pedidos(): 
     saludo_inicial()
     comenzar = True
+    
+    
     
     #loop central
     while comenzar:
@@ -136,7 +154,19 @@ def pedidos():
             except:
                 hablar('Lo siento, no pude encontrar el precio de la acción indicada')
                 continue
-        elif 'adiós' in pedido or 'chau' in pedido or 'hasta luego' in pedido:
+            
+        elif 'chat gpt' in pedido or 'Preguntale a chat gpt' in pedido:
+            hablar("¿Qué quieres que le pregunte a ChatGPT?")
+            pregunta = transformar_audio_en_texto().lower()
+            hablar("Entendido, preguntando a ChatGPT...")
+            respuesta = preguntar_a_chatgpt(pregunta)
+            print("ChatGPT respondió:", respuesta)
+            hablar(respuesta)
+            continue
+
+        elif 'chao' in pedido or 'chau' in pedido or 'hasta luego' in pedido:
             hablar('Nos estamos hablando, Piju. Que andes bien')
             comenzar = False
             break
+        
+pedidos()
